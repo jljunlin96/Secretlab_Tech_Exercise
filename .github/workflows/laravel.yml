@@ -10,54 +10,55 @@ jobs:
   laravel-tests:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: secret_lab_test
+          MYSQL_USER: root
+        options: --health-cmd="mysqladmin ping --silent" --health-timeout=30s --health-retries=3
+
     steps:
     - uses: actions/checkout@v4
-
-    - name: Set up PHP 8.4
-      uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
       with:
         php-version: '8.4'
-
-    - name: Copy .env file
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-
-    - name: Install dependencies
+    
+    - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     - name: Dump Autoload
       run: composer dump-autoload --optimize
-      
+
     - name: Generate Application Key
       run: php artisan key:generate
 
-    - name: Set directory permissions
+    - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
 
-    - name: Create SQLite Database
+    - name: Set up .env file for MySQL
       run: |
-        mkdir -p database
-        touch database/database.sqlite
+        cp .env.example .env
+        echo "DB_CONNECTION=mysql" >> .env
+        echo "DB_HOST=127.0.0.1" >> .env
+        echo "DB_PORT=3306" >> .env
+        echo "DB_DATABASE=secret_lab_test" >> .env
+        echo "DB_USERNAME=root" >> .env
+        echo "DB_PASSWORD=secret" >> .env
 
-    - name: Run migrations
-      run: php artisan migrate --database=sqlite
-
-    - name: Run PHPUnit tests with coverage
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-        XDEBUG_MODE: coverage
-        XDEBUG_CONFIG: "coverage_enable=1"
+    - name: Wait for MySQL to be ready
       run: |
-        vendor/bin/phpunit --coverage-html=coverage-report
+        until mysql -h 127.0.0.1 -u root -psecret -e "show databases"; do
+          echo "Waiting for MySQL to be ready..."
+          sleep 5
+        done
 
-    - name: Upload coverage report as artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: code-coverage-report
-        path: coverage-report
+    - name: Run Migrations
+      run: php artisan migrate --force
 
-    - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan test --coverage-text
+    - name: Execute tests (Unit and Feature tests)
+      run: php artisan test
