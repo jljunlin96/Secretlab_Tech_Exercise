@@ -14,10 +14,10 @@ class KeyValueRepositories
      * @param array $input
      * @return KeyValue
      */
-    public function create(array $input)
+    public function create(array $input): KeyValue
     {
         //Filter the input data
-        $data = data_only($input, [
+        $data = data_all($input, [
             'key_value.key',
             'key_value.value',
         ]);
