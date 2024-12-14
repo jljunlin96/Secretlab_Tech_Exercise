@@ -96,7 +96,11 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Step 3: Deploy to EC2 after approval
+    - name: Provide Passphrase
+      run: |
+         echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add -
+     
+    # Step 3: Deploy to EC2 after approval
     - name: Deploy to EC2
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
