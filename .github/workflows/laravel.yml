@@ -85,7 +85,7 @@ jobs:
   deploy:
     needs: laravel-tests  # Ensure tests pass first
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'  
+    if: needs.laravel-tests.result == 'success' && github.event_name == 'workflow_dispatch'  
 
     steps:
       # Step 1: Checkout the code
