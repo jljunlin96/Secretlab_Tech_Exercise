@@ -95,10 +95,6 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: Provide Passphrase
-      run: |
-         echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add -
      
     # Step 3: Deploy to EC2 after approval
     - name: Deploy to EC2
