@@ -1,7 +1,13 @@
 name: Deploy to EC2
 
 on:
-  workflow_dispatch:  # Allow manual trigger from GitHub UI
+  push:
+    branches:
+      - main  # Trigger deployment on push to the `main` branch
+  pull_request:
+    branches:
+      - main  # Optional: Deploy when a PR is merged to `main`
+  workflow_dispatch:  # Allow manual trigger via GitHub UI or API
 
 jobs:
   deploy:
