@@ -3,7 +3,7 @@ name: Laravel
 on:
   push:
     branches:
-      - main  # Run tests automatically on push to main
+      - master  # Run tests automatically on push to main
   workflow_dispatch:
 
 jobs:
