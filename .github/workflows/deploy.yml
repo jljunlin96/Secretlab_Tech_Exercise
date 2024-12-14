@@ -25,5 +25,13 @@ jobs:
           sshpass -p ${{ secrets.SSH_PASSPHRASE }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           # Any command you want to run remotely
           echo "Connected successfully"
-          sudo ls -ltr
+          sudo cp -rf /var/www/release/current /var/www/release/backup/$(date +\%Y\%m\%d\%H\%M\%S)
+          cd /path/to/your/laravel/project
+          git pull origin master  # Pull latest changes from the main branch
+          composer install --no-dev --optimize-autoloader  # Install production dependencies
+          php artisan migrate --force  # Run database migrations
+          php artisan config:cache  # Cache the configuration
+          php artisan route:cache  # Cache routes
+          php artisan view:cache  # Cache views
+          sudo service apache2 reload  # Reload server (if using Apache) or reload nginx, etc.
           EOF
