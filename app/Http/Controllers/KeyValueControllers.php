@@ -43,6 +43,9 @@ class KeyValueControllers
             'timestamp' => [new UnixTimestamp],
         ]);
 
+        //Replace space with underscore
+        $key = str_replace(' ', '_', $key);
+
         if($request->has('timestamp')){
             // Convert the timestamp to a date
             $date = date('Y-m-d H:i:s', $request->timestamp);
