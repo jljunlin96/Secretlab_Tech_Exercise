@@ -19,7 +19,7 @@ class KeyValueControllers
     public function index(Request $request): JsonResponse
     {
         // Fetch all data
-        $values = KeyValue::all();
+        $values = KeyValue::orderBy('created_at', 'desc')->get();
 
         // Transform data using the transformer
         $filterValues = $values->map(function ($value) {

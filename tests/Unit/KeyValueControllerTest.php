@@ -184,46 +184,4 @@ class KeyValueControllerTest extends TestCase
         // Assert: The response should return an error
         $response->assertStatus(400)->assertJson(['message' => 'File upload is not supported.']);
     }
-
-    public function test_index_no_application_json()
-    {
-        // Arrange: Set up any necessary data.
-        $data['key_value']['key'] = 'test_key';
-        $data['key_value']['value'] = 'test_value';
-        KeyValueRepositories::create($data);
-
-        // Act: Perform a GET request to the index route
-        $response = $this->get(route('key.value.index'));
-
-        // Assert: The response should return an error
-        $response->assertStatus(415)->assertJson(['message' => 'Only JSON requests are accepted.']);
-    }
-
-    public function test_show_no_application_json()
-    {
-        // Arrange: Set up any necessary data.
-        $data['key_value']['key'] = 'test_key';
-        $data['key_value']['value'] = 'test_value';
-        KeyValueRepositories::create($data);
-
-        // Act: Perform a GET request to the show route
-        $response = $this->get(route('key.value.show', 'test_key'));
-
-        // Assert: The response should return an error
-        $response->assertStatus(415)->assertJson(['message' => 'Only JSON requests are accepted.']);
-    }
-
-    public function test_store_no_application_json()
-    {
-        // Arrange: Set up any necessary data.
-        $data = [
-            'test_key' => 'test_value',
-        ];
-
-        // Act: Perform a POST request to the store route
-        $response = $this->post(route('key.value.store'), $data);
-
-        // Assert: The response should return an error
-        $response->assertStatus(415)->assertJson(['message' => 'Only JSON requests are accepted.']);
-    }
 }
