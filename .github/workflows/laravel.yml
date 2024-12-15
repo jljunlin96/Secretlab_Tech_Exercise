@@ -99,8 +99,9 @@ jobs:
           echo "Connected successfully"
           sudo cp -rf /var/www/release/current /var/www/release/backup/$(date +\%Y\%m\%d\%H\%M\%S)
           cd /var/www/laravel
+          sudo git stash
           sudo git pull origin master  # Pull latest changes from the main branch
-          sudo composer install --no-dev --optimize-autoloader  # Install production dependencies
+          composer install --no-dev --optimize-autoloader  # Install production dependencies
           sudo php artisan migrate --force  # Run database migrations
           php artisan config:cache  # Cache the configuration
           php artisan route:cache  # Cache routes
